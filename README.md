@@ -34,7 +34,7 @@ SkillHub stores these workflows as structured markdown files with:
 
 ```bash
 # Install the SkillHub CLI
-pip install skillhub-cli
+pip install skillhub
 
 # Search for skills
 skillhub search "benchmark model"
@@ -159,8 +159,8 @@ skillhub-registry/
 ## CLI Installation
 
 ```bash
-# Install from PyPI (coming soon)
-pip install skillhub-cli
+# Install from PyPI
+pip install skillhub
 
 # Or install from source
 git clone https://github.com/v1k22/skillhub-cli.git
