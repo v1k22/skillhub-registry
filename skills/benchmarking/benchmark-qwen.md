@@ -7,7 +7,7 @@ metadata:
   tags: ["llm", "benchmarking", "qwen", "performance", "ml"]
   author: "skillhub"
   created: "2024-01-15"
-  updated: "2024-01-20"
+  updated: "2025-12-28"
 
 requirements:
   os: ["linux", "macos"]
