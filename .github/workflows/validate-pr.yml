@@ -1,0 +1,70 @@
+name: Validate Skill Submission
+
+on:
+  pull_request:
+    paths:
+      - 'skills/**/*.md'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v41
+        with:
+          files: 'skills/**/*.md'
+
+      - name: Validate changed skills
+        run: |
+          EXIT_CODE=0
+
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo ""
+            echo "================================================================"
+            echo "Validating: $file"
+            echo "================================================================"
+
+            if ! python scripts/validate_skill.py "$file"; then
+              EXIT_CODE=1
+            fi
+          done
+
+          exit $EXIT_CODE
+
+      - name: Comment on PR (if validation failed)
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ **Skill validation failed!**\n\nPlease check the logs above and fix the errors before this PR can be merged.\n\nCommon issues:\n- Missing required metadata fields\n- Invalid YAML frontmatter\n- Missing required sections\n- Filename doesn\'t match skill name\n\nSee [CONTRIBUTING.md](https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/blob/main/CONTRIBUTING.md) for guidance.'
+            })
+
+      - name: Comment on PR (if validation passed)
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ **Skill validation passed!**\n\nYour skill file is properly formatted. A maintainer will review it shortly.\n\nThank you for contributing to SkillHub! 🚀'
+            })

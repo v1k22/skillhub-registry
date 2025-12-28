@@ -1,0 +1,56 @@
+name: Update Search Index
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'skills/**/*.md'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  update-index:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0  # Fetch all history for proper git operations
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+
+      - name: Generate index
+        run: |
+          python scripts/generate_index.py
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet index.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add index.json
+          git commit -m "Update search index [skip ci]"
+          git push
+
+      - name: No changes detected
+        if: steps.check_changes.outputs.changed == 'false'
+        run: |
+          echo "No changes to index.json - skipping commit"

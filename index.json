@@ -1,0 +1,106 @@
+{
+  "version": "1.0.0",
+  "generated": "2025-12-28T17:09:34.456116",
+  "skills": [
+    {
+      "name": "web-scraper",
+      "version": "1.0.0",
+      "description": "Build a robust web scraper with rate limiting, error handling, and data export",
+      "category": "automation",
+      "tags": [
+        "scraping",
+        "automation",
+        "python",
+        "beautifulsoup",
+        "requests"
+      ],
+      "author": "skillhub",
+      "created": "2024-01-15",
+      "updated": "2024-01-15",
+      "difficulty": "",
+      "estimated_time": "",
+      "path": "skills/automation/web-scraper.md",
+      "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/automation/web-scraper.md"
+    },
+    {
+      "name": "benchmark-qwen",
+      "version": "1.0.0",
+      "description": "Benchmark Qwen 3B model on custom hardware with comprehensive performance metrics",
+      "category": "benchmarking",
+      "tags": [
+        "llm",
+        "benchmarking",
+        "qwen",
+        "performance",
+        "ml"
+      ],
+      "author": "skillhub",
+      "created": "2024-01-15",
+      "updated": "2024-01-20",
+      "difficulty": "",
+      "estimated_time": "",
+      "path": "skills/benchmarking/benchmark-qwen.md",
+      "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/benchmarking/benchmark-qwen.md"
+    },
+    {
+      "name": "etl-pipeline",
+      "version": "1.0.0",
+      "description": "Set up a production-ready ETL pipeline with data validation and monitoring",
+      "category": "data-engineering",
+      "tags": [
+        "etl",
+        "data-pipeline",
+        "python",
+        "pandas",
+        "data-validation"
+      ],
+      "author": "skillhub",
+      "created": "2024-01-15",
+      "updated": "2024-01-15",
+      "difficulty": "",
+      "estimated_time": "",
+      "path": "skills/data-engineering/etl-pipeline.md",
+      "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/data-engineering/etl-pipeline.md"
+    },
+    {
+      "name": "model-deployment",
+      "version": "1.0.0",
+      "description": "Deploy ML model as REST API using FastAPI with Docker containerization",
+      "category": "ml-ops",
+      "tags": [
+        "mlops",
+        "deployment",
+        "fastapi",
+        "docker",
+        "ml"
+      ],
+      "author": "skillhub",
+      "created": "2024-01-15",
+      "updated": "2024-01-15",
+      "difficulty": "",
+      "estimated_time": "",
+      "path": "skills/ml-ops/model-deployment.md",
+      "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/ml-ops/model-deployment.md"
+    },
+    {
+      "name": "react-app-setup",
+      "version": "1.0.0",
+      "description": "Set up a modern React application with TypeScript, Tailwind CSS, and best practices",
+      "category": "web-development",
+      "tags": [
+        "react",
+        "typescript",
+        "tailwind",
+        "frontend",
+        "vite"
+      ],
+      "author": "skillhub",
+      "created": "2024-01-15",
+      "updated": "2024-01-15",
+      "difficulty": "",
+      "estimated_time": "",
+      "path": "skills/web-development/react-app-setup.md",
+      "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/web-development/react-app-setup.md"
+    }
+  ]
+}
