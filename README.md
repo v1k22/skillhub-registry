@@ -138,6 +138,8 @@ See [templates/skill-template.md](templates/skill-template.md) for the full temp
 
 ## Architecture
 
+![SkillHub Architecture](skillhub.png)
+
 ```
 skillhub-registry/
 ├── skills/              # All skills organized by category
