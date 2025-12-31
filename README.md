@@ -51,6 +51,15 @@ cat benchmark-qwen.md
 
 ### Contributing Skills
 
+**Easy Way (Recommended):** Submit via GitHub Issue - no setup required!
+
+1. Go to [Submit a Skill](https://github.com/v1k22/skillhub-registry/issues/new?template=submit-skill.yml)
+2. Paste your skill markdown
+3. Submit the issue
+4. A Pull Request is created automatically!
+
+**Alternative:** Manual PR submission
+
 ```bash
 # Fork this repository
 # Create a new skill using the template
