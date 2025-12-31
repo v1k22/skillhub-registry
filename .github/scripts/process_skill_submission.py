@@ -25,7 +25,7 @@ def extract_skill_content(body: str) -> str:
     """Extract the skill markdown content from issue body."""
     content = extract_field(body, "Skill Markdown")
     # Remove any markdown code block wrappers if present
-    content = re.sub(r'^```(?:markdown|md)?\s*\n', '', content)
+    content = re.sub(r'^```(?:markdown|md|yaml)?\s*\n', '', content)
     content = re.sub(r'\n```\s*$', '', content)
     return content.strip()
 
@@ -58,73 +58,81 @@ def parse_yaml_frontmatter(content: str) -> dict:
         return None
 
 
-def validate_skill(content: str) -> tuple[bool, list[str]]:
+def validate_skill(content: str) -> tuple[bool, list[str], list[str]]:
     """
     Validate skill content.
-    Returns (is_valid, list_of_errors)
+    Returns (is_valid, list_of_errors, list_of_warnings)
+
+    Only essential fields for index.json are required:
+    - name, version, description, category, tags, author
     """
     errors = []
+    warnings = []
 
     # Check YAML frontmatter exists
     if not content.startswith('---'):
         errors.append("Skill must start with YAML frontmatter (---)")
-        return False, errors
+        return False, errors, warnings
 
     # Parse frontmatter
     frontmatter = parse_yaml_frontmatter(content)
     if frontmatter is None:
-        errors.append("Invalid YAML frontmatter format")
-        return False, errors
+        errors.append("Invalid YAML frontmatter format. Make sure you have closing --- after the metadata.")
+        return False, errors, warnings
 
     # Check metadata section
     metadata = frontmatter.get('metadata', {})
     if not metadata:
         errors.append("Missing 'metadata' section in frontmatter")
-        return False, errors
+        return False, errors, warnings
 
-    # Required metadata fields
-    required_fields = ['name', 'version', 'description', 'category', 'tags', 'author']
+    # Required metadata fields (essential for index.json)
+    required_fields = ['name', 'description', 'category', 'tags', 'author']
     for field in required_fields:
-        if field not in metadata:
+        if field not in metadata or not metadata[field]:
             errors.append(f"Missing required metadata field: {field}")
 
-    # Validate name format (kebab-case)
-    name = metadata.get('name', '')
-    if name and not re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', name):
-        errors.append(f"Skill name must be kebab-case (e.g., 'my-skill-name'), got: {name}")
+    # Optional but recommended
+    if 'version' not in metadata:
+        warnings.append("Missing 'version' field - defaulting to 1.0.0")
 
-    # Validate version format (semver-ish)
-    version = metadata.get('version', '')
-    if version and not re.match(r'^\d+\.\d+\.\d+', version):
-        errors.append(f"Version must be semver format (e.g., '1.0.0'), got: {version}")
+    # Validate name format (kebab-case) - be lenient
+    name = metadata.get('name', '')
+    if name:
+        # Allow alphanumeric and hyphens, just no spaces or special chars
+        if not re.match(r'^[a-zA-Z0-9-]+$', name):
+            errors.append(f"Skill name should only contain letters, numbers, and hyphens. Got: {name}")
+        elif ' ' in name:
+            errors.append(f"Skill name cannot contain spaces. Use hyphens instead. Got: {name}")
 
     # Validate tags is a list
     tags = metadata.get('tags', [])
-    if not isinstance(tags, list):
-        errors.append("Tags must be a list/array")
+    if tags and not isinstance(tags, list):
+        errors.append("Tags must be a list/array (e.g., [\"tag1\", \"tag2\"])")
 
-    # Check required content sections
-    required_sections = ['Overview', 'Task Description', 'Steps', 'Success Criteria']
-    for section in required_sections:
-        # Look for ## Section Name
-        if not re.search(rf'^##\s+{re.escape(section)}\s*$', content, re.MULTILINE | re.IGNORECASE):
-            errors.append(f"Missing required section: ## {section}")
+    # Content sections are now optional - just warn if missing
+    recommended_sections = ['Overview', 'Steps']
+    for section in recommended_sections:
+        # Look for ## Section Name (case insensitive, allowing content after)
+        if not re.search(rf'^##\s+{re.escape(section)}', content, re.MULTILINE | re.IGNORECASE):
+            warnings.append(f"Recommended section missing: ## {section}")
 
-    return len(errors) == 0, errors
+    return len(errors) == 0, errors, warnings
 
 
 def check_duplicate(skill_name: str, category: str) -> bool:
     """Check if a skill with this name already exists."""
     skills_dir = Path('skills')
+    if not skills_dir.exists():
+        return False
 
-    # Check in specified category
-    target_path = skills_dir / category / f"{skill_name}.md"
-    if target_path.exists():
-        return True
+    # Normalize skill name for comparison
+    skill_name_lower = skill_name.lower()
 
     # Check in all categories
-    for skill_file in skills_dir.rglob(f"{skill_name}.md"):
-        return True
+    for skill_file in skills_dir.rglob("*.md"):
+        if skill_file.stem.lower() == skill_name_lower:
+            return True
 
     return False
 
@@ -143,17 +151,21 @@ def main():
     # Extract skill content
     skill_content = extract_skill_content(issue_body)
     if not skill_content:
-        print("::error::Could not extract skill content from issue body")
+        print("::error::Could not extract skill content from issue body. Make sure you pasted the skill markdown in the 'Skill Markdown' field.")
         sys.exit(1)
 
-    # Extract category
-    category = extract_category(issue_body)
-    if not category:
-        print("::error::Could not extract category from issue body")
-        sys.exit(1)
+    # Debug: print first 200 chars of extracted content
+    print(f"Extracted skill content (first 200 chars): {skill_content[:200]}...")
+
+    # Extract category from form (fallback)
+    form_category = extract_category(issue_body)
 
     # Validate skill
-    is_valid, errors = validate_skill(skill_content)
+    is_valid, errors, warnings = validate_skill(skill_content)
+
+    # Print warnings (non-fatal)
+    for warning in warnings:
+        print(f"::warning::{warning}")
 
     if not is_valid:
         error_msg = "Skill validation failed:\\n" + "\\n".join(f"- {e}" for e in errors)
@@ -168,15 +180,20 @@ def main():
     skill_name = metadata.get('name', 'unknown-skill')
 
     # Use category from metadata if available, otherwise from form
-    skill_category = metadata.get('category', category).lower().replace(" ", "-")
+    skill_category = metadata.get('category', form_category)
+    if skill_category:
+        skill_category = skill_category.lower().replace(" ", "-")
+    else:
+        skill_category = 'uncategorized'
 
     # Check for duplicates
     if check_duplicate(skill_name, skill_category):
-        print(f"::error::A skill named '{skill_name}' already exists")
-        sys.exit(1)
+        print(f"::warning::A skill named '{skill_name}' already exists. The PR will update the existing skill.")
+
+    # Get version with default
+    skill_version = metadata.get('version', '1.0.0')
 
     # Output results for GitHub Actions
-    # Using environment files for multi-line content
     import os
 
     github_output = os.environ.get('GITHUB_OUTPUT', '')
@@ -184,7 +201,7 @@ def main():
         with open(github_output, 'a') as f:
             f.write(f"skill_name={skill_name}\n")
             f.write(f"skill_category={skill_category}\n")
-            f.write(f"skill_version={metadata.get('version', '1.0.0')}\n")
+            f.write(f"skill_version={skill_version}\n")
             f.write(f"skill_description={metadata.get('description', '')}\n")
             f.write(f"skill_author={metadata.get('author', 'unknown')}\n")
             f.write(f"file_path=skills/{skill_category}/{skill_name}.md\n")
@@ -192,7 +209,7 @@ def main():
         # Fallback for local testing
         print(f"skill_name={skill_name}")
         print(f"skill_category={skill_category}")
-        print(f"skill_version={metadata.get('version', '1.0.0')}")
+        print(f"skill_version={skill_version}")
         print(f"skill_description={metadata.get('description', '')}")
         print(f"skill_author={metadata.get('author', 'unknown')}")
         print(f"file_path=skills/{skill_category}/{skill_name}.md")
