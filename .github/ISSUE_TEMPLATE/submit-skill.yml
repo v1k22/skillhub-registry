@@ -1,0 +1,112 @@
+name: Submit a Skill
+description: Submit a new AI agent workflow skill to the SkillHub registry
+title: "[SKILL] "
+labels: ["skill-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Submit Your Skill to SkillHub
+
+        Thank you for contributing! Paste your skill markdown below and we'll automatically create a Pull Request for you.
+
+        **Need help?** Check the [skill template](https://github.com/v1k22/skillhub-registry/blob/main/templates/skill-template.md) for the required format.
+
+  - type: textarea
+    id: skill-content
+    attributes:
+      label: Skill Markdown
+      description: |
+        Paste your complete skill markdown here, including the YAML frontmatter.
+        Make sure it starts with `---` and includes all required sections.
+      placeholder: |
+        ---
+        metadata:
+          name: "my-skill-name"
+          version: "1.0.0"
+          description: "What this skill does"
+          category: "category-name"
+          tags: ["tag1", "tag2"]
+          author: "your-github-username"
+
+        requirements:
+          os: ["linux", "macos", "windows"]
+          python: ">=3.9"
+        ---
+
+        # Skill Title
+
+        ## Overview
+        Brief description...
+
+        ## Task Description
+        What gets accomplished...
+
+        ## Steps
+        1. First step
+        2. Second step
+
+        ## Expected Output
+        What you'll get...
+
+        ## Success Criteria
+        How to verify it worked...
+      render: markdown
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: Select the category for your skill (or choose "Other" to suggest a new one)
+      options:
+        - automation
+        - benchmarking
+        - data-engineering
+        - ml-ops
+        - web-development
+        - devops
+        - testing
+        - documentation
+        - security
+        - other
+    validations:
+      required: true
+
+  - type: input
+    id: custom-category
+    attributes:
+      label: Custom Category (if "Other" selected above)
+      description: Suggest a new category name (lowercase, hyphenated)
+      placeholder: "my-new-category"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Submission Checklist
+      description: Please confirm the following
+      options:
+        - label: I have tested this skill and it works as described
+          required: true
+        - label: I have included all required sections (Overview, Task Description, Steps, Success Criteria)
+          required: true
+        - label: I am the original author or have permission to submit this skill
+          required: true
+        - label: This skill does not contain sensitive information (API keys, passwords, etc.)
+          required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+        **What happens next?**
+        1. Our bot will validate your skill format
+        2. If valid, a Pull Request will be created automatically
+        3. You'll receive a comment with the PR link
+        4. A maintainer will review and merge your skill
+
+        Thanks for contributing to SkillHub!

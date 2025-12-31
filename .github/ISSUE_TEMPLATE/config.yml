@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Bug Report
+    url: https://github.com/v1k22/skillhub-cli/issues/new
+    about: Report bugs with the SkillHub CLI tool
+  - name: Feature Request
+    url: https://github.com/v1k22/skillhub-registry/discussions/new?category=ideas
+    about: Suggest new features or improvements
+  - name: Skill Template
+    url: https://github.com/v1k22/skillhub-registry/blob/main/templates/skill-template.md
+    about: View the skill template before submitting

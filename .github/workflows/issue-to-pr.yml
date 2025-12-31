@@ -1,0 +1,223 @@
+name: Skill Submission (Issue to PR)
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  process-submission:
+    # Only run for issues with skill-submission label
+    if: contains(github.event.issue.labels.*.name, 'skill-submission')
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Save issue body to file
+        run: |
+          cat << 'ISSUE_BODY_EOF' > /tmp/issue_body.txt
+          ${{ github.event.issue.body }}
+          ISSUE_BODY_EOF
+
+      - name: Process and validate skill submission
+        id: process
+        run: |
+          python .github/scripts/process_skill_submission.py /tmp/issue_body.txt
+        continue-on-error: true
+
+      - name: Comment on validation failure
+        if: steps.process.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = context.issue.number;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: `## Skill Validation Failed
+
+            There were some issues with your skill submission. Please fix the following errors and edit your issue to resubmit:
+
+            \`\`\`
+            Check the workflow logs for detailed error messages.
+            \`\`\`
+
+            **Common issues:**
+            - Missing YAML frontmatter (must start with \`---\`)
+            - Missing required metadata fields (name, version, description, category, tags, author)
+            - Missing required sections (Overview, Task Description, Steps, Success Criteria)
+            - Skill name not in kebab-case format
+            - Duplicate skill name
+
+            Need help? Check the [skill template](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/templates/skill-template.md).
+
+            ---
+            *This is an automated message from SkillHub Bot*`
+            });
+
+            // Add needs-revision label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: ['needs-revision']
+            });
+
+      - name: Stop if validation failed
+        if: steps.process.outcome == 'failure'
+        run: exit 1
+
+      - name: Read skill content
+        id: skill
+        run: |
+          # Read the processed skill content
+          SKILL_CONTENT=$(cat /tmp/skill_content.md)
+
+          # Store in environment file for multi-line content
+          echo "SKILL_CONTENT<<EOF" >> $GITHUB_ENV
+          echo "$SKILL_CONTENT" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Create skill file and branch
+        run: |
+          # Configure git
+          git config user.name "SkillHub Bot"
+          git config user.email "skillhub-bot@users.noreply.github.com"
+
+          # Create branch
+          BRANCH_NAME="skill-submission-${{ github.event.issue.number }}"
+          git checkout -b "$BRANCH_NAME"
+
+          # Create category directory if needed
+          mkdir -p "skills/${{ steps.process.outputs.skill_category }}"
+
+          # Write skill file
+          cat /tmp/skill_content.md > "skills/${{ steps.process.outputs.skill_category }}/${{ steps.process.outputs.skill_name }}.md"
+
+          # Commit
+          git add .
+          git commit -m "Add skill: ${{ steps.process.outputs.skill_name }}
+
+          Submitted via issue #${{ github.event.issue.number }}
+          Author: ${{ steps.process.outputs.skill_author }}
+          Category: ${{ steps.process.outputs.skill_category }}"
+
+          # Push branch
+          git push origin "$BRANCH_NAME"
+
+      - name: Create Pull Request
+        id: create-pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = context.issue.number;
+            const skillName = '${{ steps.process.outputs.skill_name }}';
+            const skillCategory = '${{ steps.process.outputs.skill_category }}';
+            const skillDescription = '${{ steps.process.outputs.skill_description }}';
+            const skillAuthor = '${{ steps.process.outputs.skill_author }}';
+            const skillVersion = '${{ steps.process.outputs.skill_version }}';
+            const branchName = `skill-submission-${issueNumber}`;
+
+            // Create PR
+            const pr = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Add skill: ${skillName}`,
+              head: branchName,
+              base: 'main',
+              body: `## New Skill Submission
+
+            | Field | Value |
+            |-------|-------|
+            | **Name** | \`${skillName}\` |
+            | **Category** | ${skillCategory} |
+            | **Version** | ${skillVersion} |
+            | **Author** | @${skillAuthor} |
+
+            ### Description
+            ${skillDescription}
+
+            ---
+
+            ### File Location
+            \`skills/${skillCategory}/${skillName}.md\`
+
+            ### Source
+            Closes #${issueNumber}
+
+            ---
+            *This PR was automatically created from a skill submission issue.*
+            *Review the skill content and merge when ready.*`
+            });
+
+            // Add labels to PR
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.data.number,
+              labels: ['skill-submission', 'automated-pr']
+            });
+
+            // Return PR URL
+            core.setOutput('pr_url', pr.data.html_url);
+            core.setOutput('pr_number', pr.data.number);
+
+            return pr.data.html_url;
+
+      - name: Comment on issue with PR link
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = context.issue.number;
+            const prUrl = '${{ steps.create-pr.outputs.pr_url }}';
+            const skillName = '${{ steps.process.outputs.skill_name }}';
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: `## Skill Submission Successful!
+
+            Your skill **\`${skillName}\`** has been validated and a Pull Request has been created.
+
+            ### Next Steps
+            1. **Review your PR:** ${prUrl}
+            2. **Wait for maintainer review**
+            3. **Once merged**, your skill will be available via:
+               \`\`\`bash
+               skillhub pull ${skillName}
+               \`\`\`
+
+            Thank you for contributing to SkillHub!
+
+            ---
+            *This is an automated message from SkillHub Bot*`
+            });
+
+      - name: Close issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              state: 'closed',
+              state_reason: 'completed'
+            });
