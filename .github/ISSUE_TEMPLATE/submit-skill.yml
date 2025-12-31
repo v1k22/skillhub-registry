@@ -28,29 +28,19 @@ body:
           category: "category-name"
           tags: ["tag1", "tag2"]
           author: "your-github-username"
-
-        requirements:
-          os: ["linux", "macos", "windows"]
-          python: ">=3.9"
         ---
 
         # Skill Title
 
         ## Overview
-        Brief description...
-
-        ## Task Description
-        What gets accomplished...
+        Brief description of what this skill does...
 
         ## Steps
         1. First step
         2. Second step
+        3. ...
 
-        ## Expected Output
-        What you'll get...
-
-        ## Success Criteria
-        How to verify it worked...
+        (Add any other sections you need: Prerequisites, Expected Output, Troubleshooting, etc.)
       render: markdown
     validations:
       required: true
