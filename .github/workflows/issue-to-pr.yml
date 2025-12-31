@@ -100,8 +100,12 @@ jobs:
           git config user.name "SkillHub Bot"
           git config user.email "skillhub-bot@users.noreply.github.com"
 
-          # Create branch
           BRANCH_NAME="skill-submission-${{ github.event.issue.number }}"
+
+          # Delete existing branch if it exists (from failed previous run)
+          git push origin --delete "$BRANCH_NAME" 2>/dev/null || true
+
+          # Create fresh branch from main
           git checkout -b "$BRANCH_NAME"
 
           # Create category directory if needed
