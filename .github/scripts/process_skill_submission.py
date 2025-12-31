@@ -11,32 +11,103 @@ import yaml
 from pathlib import Path
 
 
-def extract_field(body: str, field_name: str) -> str:
-    """Extract content from a GitHub issue form field."""
-    # GitHub issue forms use ### Field Name format
-    pattern = rf'### {re.escape(field_name)}\s*\n+(.*?)(?=\n### |\Z)'
-    match = re.search(pattern, body, re.DOTALL)
-    if match:
-        return match.group(1).strip()
-    return ""
-
-
 def extract_skill_content(body: str) -> str:
-    """Extract the skill markdown content from issue body."""
-    content = extract_field(body, "Skill Markdown")
+    """
+    Extract the skill markdown content from issue body.
+    GitHub issue forms format: ### Field Name followed by content.
+    We need to extract everything between '### Skill Markdown' and '### Category'.
+    """
+    # Find the start of skill content
+    start_marker = "### Skill Markdown"
+    end_marker = "\n### Category"
+
+    start_idx = body.find(start_marker)
+    if start_idx == -1:
+        return ""
+
+    # Move past the marker and any newlines
+    start_idx = start_idx + len(start_marker)
+
+    # Find the end (### Category section)
+    end_idx = body.find(end_marker, start_idx)
+    if end_idx == -1:
+        # If no Category field, take everything to the end
+        content = body[start_idx:]
+    else:
+        content = body[start_idx:end_idx]
+
+    # Clean up
+    content = content.strip()
+
     # Remove any markdown code block wrappers if present
     content = re.sub(r'^```(?:markdown|md|yaml)?\s*\n', '', content)
     content = re.sub(r'\n```\s*$', '', content)
+
+    return content.strip()
+
+
+def extract_field(body: str, field_name: str, next_field: str = None) -> str:
+    """Extract content from a GitHub issue form field."""
+    start_marker = f"### {field_name}"
+    start_idx = body.find(start_marker)
+    if start_idx == -1:
+        return ""
+
+    start_idx = start_idx + len(start_marker)
+
+    if next_field:
+        end_marker = f"\n### {next_field}"
+        end_idx = body.find(end_marker, start_idx)
+        if end_idx == -1:
+            content = body[start_idx:]
+        else:
+            content = body[start_idx:end_idx]
+    else:
+        # Find next ### that starts a new form field
+        # Form fields are: Category, Custom Category, Submission Checklist
+        for marker in ["\n### Category", "\n### Custom Category", "\n### Submission Checklist"]:
+            end_idx = body.find(marker, start_idx)
+            if end_idx != -1:
+                return body[start_idx:end_idx].strip()
+        content = body[start_idx:]
+
     return content.strip()
 
 
 def extract_category(body: str) -> str:
     """Extract category from issue body."""
-    category = extract_field(body, "Category")
+    # Category field is between ### Category and ### Custom Category
+    start_marker = "\n### Category\n"
+    start_idx = body.find(start_marker)
+    if start_idx == -1:
+        start_marker = "### Category\n"
+        start_idx = body.find(start_marker)
+    if start_idx == -1:
+        return ""
+
+    start_idx = start_idx + len(start_marker)
+
+    # Find end - next form field
+    end_idx = len(body)
+    for marker in ["\n### Custom Category", "\n### Submission Checklist"]:
+        idx = body.find(marker, start_idx)
+        if idx != -1 and idx < end_idx:
+            end_idx = idx
+
+    category = body[start_idx:end_idx].strip()
+
     if category.lower() == "other":
-        custom = extract_field(body, "Custom Category (if \"Other\" selected above)")
-        if custom:
-            return custom.lower().replace(" ", "-")
+        # Look for custom category
+        custom_start = body.find("### Custom Category")
+        if custom_start != -1:
+            custom_start = body.find("\n", custom_start) + 1
+            custom_end = body.find("\n### ", custom_start)
+            if custom_end == -1:
+                custom_end = len(body)
+            custom = body[custom_start:custom_end].strip()
+            if custom:
+                return custom.lower().replace(" ", "-")
+
     return category.lower()
 
 
