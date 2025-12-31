@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated": "2025-12-28T17:40:32.084828",
+  "generated": "2025-12-31T18:09:53.216566",
   "skills": [
     {
       "name": "web-scraper",
@@ -61,6 +61,27 @@
       "estimated_time": "",
       "path": "skills/data-engineering/etl-pipeline.md",
       "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/data-engineering/etl-pipeline.md"
+    },
+    {
+      "name": "pytorch-jupyter-notebook-docker",
+      "version": "1.0.0",
+      "description": "Run Jupyter Notebook with pre-installed PyTorch and NVIDIA GPU support using Docker",
+      "category": "machine-learning",
+      "tags": [
+        "pytorch",
+        "jupyter",
+        "docker",
+        "cuda",
+        "gpu",
+        "machine-learning"
+      ],
+      "author": "Tverous",
+      "created": "2024-01-15",
+      "updated": "2025-12-31",
+      "difficulty": "",
+      "estimated_time": "",
+      "path": "skills/machine-learning/pytorch-jupyter-notebook-docker.md",
+      "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/machine-learning/pytorch-jupyter-notebook-docker.md"
     },
     {
       "name": "model-deployment",
