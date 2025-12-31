@@ -102,15 +102,16 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
 
       - name: Create skill file and branch
+        id: create-branch
         run: |
           # Configure git
           git config user.name "SkillHub Bot"
           git config user.email "skillhub-bot@users.noreply.github.com"
 
-          BRANCH_NAME="skill-submission-${{ github.event.issue.number }}"
-
-          # Delete existing branch if it exists (from failed previous run)
-          git push origin --delete "$BRANCH_NAME" 2>/dev/null || true
+          # Unique branch name with timestamp
+          TIMESTAMP=$(date +%s)
+          BRANCH_NAME="skill-${{ github.event.issue.number }}-${TIMESTAMP}"
+          echo "branch_name=${BRANCH_NAME}" >> $GITHUB_OUTPUT
 
           # Create fresh branch from main
           git checkout -b "$BRANCH_NAME"
@@ -143,7 +144,7 @@ jobs:
             const skillDescription = '${{ steps.process.outputs.skill_description }}';
             const skillAuthor = '${{ steps.process.outputs.skill_author }}';
             const skillVersion = '${{ steps.process.outputs.skill_version }}';
-            const branchName = `skill-submission-${issueNumber}`;
+            const branchName = '${{ steps.create-branch.outputs.branch_name }}';
 
             // Create PR
             const pr = await github.rest.pulls.create({
