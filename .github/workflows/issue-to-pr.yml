@@ -2,7 +2,7 @@ name: Skill Submission (Issue to PR)
 
 on:
   issues:
-    types: [opened, edited]
+    types: [opened, edited, labeled]
 
 jobs:
   process-submission:
