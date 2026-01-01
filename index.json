@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated": "2025-12-31T18:09:53.216566",
+  "generated": "2026-01-01T16:25:51.053626",
   "skills": [
     {
       "name": "web-scraper",
@@ -102,6 +102,26 @@
       "estimated_time": "",
       "path": "skills/ml-ops/model-deployment.md",
       "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/ml-ops/model-deployment.md"
+    },
+    {
+      "name": "wezterm-dev-setup",
+      "version": "1.0.0",
+      "description": "Complete WezTerm terminal configuration for developers with theme switching, pane management, and productivity features",
+      "category": "terminal-configuration",
+      "tags": [
+        "wezterm",
+        "terminal",
+        "productivity",
+        "development",
+        "configuration"
+      ],
+      "author": "v1k22",
+      "created": "",
+      "updated": "",
+      "difficulty": "",
+      "estimated_time": "",
+      "path": "skills/terminal-configuration/wezterm-dev-setup.md",
+      "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/terminal-configuration/wezterm-dev-setup.md"
     },
     {
       "name": "react-app-setup",
