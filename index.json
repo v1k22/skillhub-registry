@@ -1,7 +1,29 @@
 {
   "version": "1.0.0",
-  "generated": "2026-02-18T12:42:21.688689",
+  "generated": "2026-06-05T00:00:00.000000",
   "skills": [
+    {
+      "name": "android-foreground-notification",
+      "version": "1.0.0",
+      "description": "Android foreground service persistent notification with anti-swipe recovery — battle-tested on MIUI/HyperOS and Chinese ROMs",
+      "category": "android-development",
+      "tags": [
+        "android",
+        "kotlin",
+        "foreground-service",
+        "notification",
+        "miui",
+        "anti-swipe",
+        "proxy"
+      ],
+      "author": "Markjinli",
+      "created": "2026-06-05",
+      "updated": "2026-06-05",
+      "difficulty": "beginner",
+      "estimated_time": "5 minutes",
+      "path": "skills/android-development/android-foreground-notification.md",
+      "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/android-development/android-foreground-notification.md"
+    },
     {
       "name": "librispeech-asr-test-clips",
       "version": "1.0.0",
