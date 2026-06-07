@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated": "2026-02-18T12:42:21.688689",
+  "generated": "2026-06-07T20:25:35.151854",
   "skills": [
     {
       "name": "librispeech-asr-test-clips",
@@ -23,6 +23,26 @@
       "estimated_time": "",
       "path": "skills/asr-evaluation/librispeech-asr-test-clips.md",
       "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/asr-evaluation/librispeech-asr-test-clips.md"
+    },
+    {
+      "name": "hermes-tweet",
+      "version": "1.0.0",
+      "description": "Install and operate the Hermes Tweet plugin for safe X/Twitter automation inside Hermes Agent",
+      "category": "automation",
+      "tags": [
+        "hermes-agent",
+        "twitter",
+        "x",
+        "automation",
+        "social-media"
+      ],
+      "author": "Xquik",
+      "created": "2026-06-07",
+      "updated": "2026-06-07",
+      "difficulty": "",
+      "estimated_time": "",
+      "path": "skills/automation/hermes-tweet.md",
+      "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/automation/hermes-tweet.md"
     },
     {
       "name": "web-scraper",
