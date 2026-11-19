@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated": "2026-02-18T12:42:21.688689",
+  "generated": "2026-11-19T18:13:24.120020",
   "skills": [
     {
       "name": "librispeech-asr-test-clips",
@@ -23,6 +23,28 @@
       "estimated_time": "",
       "path": "skills/asr-evaluation/librispeech-asr-test-clips.md",
       "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/asr-evaluation/librispeech-asr-test-clips.md"
+    },
+    {
+      "name": "qcache",
+      "version": "1.0.0",
+      "description": "Q&A cache skill for OpenClaw that reduces token consumption by caching answers to objective, time-stable questions using semantic similarity matching",
+      "category": "automation",
+      "tags": [
+        "openclaw",
+        "cache",
+        "token-saving",
+        "qa",
+        "python",
+        "sqlite",
+        "semantic-similarity"
+      ],
+      "author": "ben3132",
+      "created": "2026-04-24",
+      "updated": "2026-04-24",
+      "difficulty": "",
+      "estimated_time": "",
+      "path": "skills/automation/qcache.md",
+      "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/automation/qcache.md"
     },
     {
       "name": "web-scraper",
