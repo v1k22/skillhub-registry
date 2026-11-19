@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated": "2026-11-19T18:13:24.120020",
+  "generated": "2026-11-19T18:14:14.340943",
   "skills": [
     {
       "name": "librispeech-asr-test-clips",
@@ -148,6 +148,29 @@
       "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/ml-ops/model-deployment.md"
     },
     {
+      "name": "ystar-gov-governance",
+      "version": "1.0.0",
+      "description": "Set up Y*gov runtime governance for AI agents — enforce permissions, track obligations, write tamper-proof audit trails",
+      "category": "security",
+      "tags": [
+        "ai-governance",
+        "agent-security",
+        "audit-trail",
+        "compliance",
+        "multi-agent",
+        "permissions",
+        "cieu",
+        "runtime-governance"
+      ],
+      "author": "liuhaotian2024-prog",
+      "created": "2026-03-29",
+      "updated": "2026-03-29",
+      "difficulty": "",
+      "estimated_time": "",
+      "path": "skills/security/ystar-gov-governance.md",
+      "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/security/ystar-gov-governance.md"
+    },
+    {
       "name": "wezterm-dev-setup",
       "version": "1.0.0",
       "description": "Complete WezTerm terminal configuration for developers with theme switching, pane management, and productivity features",
@@ -186,31 +209,6 @@
       "estimated_time": "",
       "path": "skills/web-development/react-app-setup.md",
       "url": "https://raw.githubusercontent.com/v1k22/skillhub-registry/main/skills/web-development/react-app-setup.md"
-    },
-    {
-      "name": "persona-mimic",
-      "version": "1.0.0",
-      "description": "AI persona database with 1000 famous characters from 8 domains — science, business, art, sports, literature, acting, history, and more",
-      "category": "persona-database",
-      "tags": [
-        "ai-persona",
-        "character-database",
-        "roleplaying",
-        "openclaw",
-        "qclaw",
-        "llm",
-        "prompt-engineering",
-        "ai-agent",
-        "famous-people",
-        "bilingual"
-      ],
-      "author": "richard3153",
-      "created": "2026-04-17",
-      "updated": "2026-04-17",
-      "difficulty": "beginner",
-      "estimated_time": "5 minutes",
-      "path": "skills/persona-database/persona-mimic.md",
-      "url": "https://raw.githubusercontent.com/richard3153/persona-mimic/main/persona-mimic.md"
     }
   ]
 }
